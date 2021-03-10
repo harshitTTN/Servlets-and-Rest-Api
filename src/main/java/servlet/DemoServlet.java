@@ -12,9 +12,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @WebServlet("/order")  //Context Route
 public class DemoServlet extends HttpServlet {
+
 
     private List<Order> orderList = new ArrayList<Order>();
 
@@ -29,13 +31,11 @@ public class DemoServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
-        String name = req.getParameter("name");
-        int quantity = Integer.parseInt(req.getParameter("quantity"));
-        int id = Integer.parseInt(req.getParameter("id"));
+        int id = Objects.nonNull(req.getParameter("id"))?Integer.parseInt(req.getParameter("id")) : 0;
         Gson gson = new GsonBuilder().create();
         Order order = getOrderById(id,resp);
 
-        if(name!=null && quantity!=0 && id!=0) {
+        if( id!=0 ) {
 
             if (order == null) {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -48,6 +48,14 @@ public class DemoServlet extends HttpServlet {
                 out.println(gson.toJson(order));
                 out.close();
             }
+        }
+        else{
+            resp.setHeader("ContentType", "application/json");
+           resp.getWriter().write(gson.toJson(orderList));;
+           resp.setStatus(HttpServletResponse.SC_OK);
+//            out.println(gson.toJson(orderList));
+
+
         }
 
     }
