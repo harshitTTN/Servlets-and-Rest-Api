@@ -73,22 +73,19 @@ public class DemoServlet extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException{
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String id = req.getParameter("id");
-        if(id != null && id.equals("")){
-            String status = deleteOrder(Integer.parseInt(id),resp);
+        if (id != null && !id.equals("")){
+            String status = deleteOrder(Integer.parseInt(id), resp);
             PrintWriter out = resp.getWriter();
             out.println(status);
             out.close();
-            resp.setStatus(HttpServletResponse.SC_OK);
-        }
-        else{
+        }else {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             PrintWriter out = resp.getWriter();
-            out.println("Please try again later");
+            out.println("Please try again later!");
             out.close();
         }
-
     }
 
     @Override
