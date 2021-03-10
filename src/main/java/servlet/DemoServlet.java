@@ -72,6 +72,45 @@ public class DemoServlet extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException{
+        String id = req.getParameter("id");
+        if(id != null && id.equals("")){
+            String status = deleteOrder(Integer.parseInt(id),resp);
+            PrintWriter out = resp.getWriter();
+            out.println(status);
+            out.close();
+            resp.setStatus(HttpServletResponse.SC_OK);
+        }
+        else{
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            PrintWriter out = resp.getWriter();
+            out.println("Please try again later");
+            out.close();
+        }
+
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String name = req.getParameter("name");
+        String id = req.getParameter("id");
+
+        if (name != null  && id != null){
+            String status = updateById(Integer.parseInt(id), name, resp);
+            PrintWriter out = resp.getWriter();
+            out.println(status);
+            out.close();
+        }else {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            PrintWriter out = resp.getWriter();
+            out.println("Please try again later!");
+            out.close();
+        }
+    }
+
+
+
     private String addOrder(int quantity, String name, HttpServletResponse resp){
 
         this.orderList.add(new Order(name, quantity,counter++));
@@ -79,8 +118,18 @@ public class DemoServlet extends HttpServlet {
         return "Order successfully added.";
 
     }
+    private String updateById(int id, String name, HttpServletResponse response){
+        for (Order order : orderList){
+            if (order.getId() == id){
+                order.setName(name);
+                return "Order name changed successfully";
+            }
+        }
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        return " Id not found";
+    }
 
-    private String deleteOrder(int id){
+    private String deleteOrder(int id,HttpServletResponse resp){
 
         for(Order orders : orderList)
         {
@@ -125,14 +174,8 @@ public class DemoServlet extends HttpServlet {
 
     public void destroy()
     {
-        int i=0;
-        for(Order orders : orderList)
-        {
-            orderList.remove(i);
-            i++;
-        }
-
-        counter=1;
+        this.orderList.clear();
+        counter = 1;
     }
 
 }
